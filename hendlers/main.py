@@ -88,9 +88,4 @@ async def cmd7(message: types.Message, state: FSMContext):
         data['ariza'] = message.text
         await message.answer('Отправлено! \n'
                              'Ожидайте')
-        print(f"1. {data['ariza_shakli']} \n"
-              f"2. {data['tashrif_davlet']}\n"
-              f"3. {data['istiqomat']}\n"
-              f"4. {data['visametric']}\n"
-              f"5. {data['xizmat']}\n"
-              f"6. {data['ariza']}\n")
+        await state.finish()
