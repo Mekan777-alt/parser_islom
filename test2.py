@@ -1,8 +1,7 @@
+import datetime
+import sys
 from playwright.sync_api import BrowserContext, sync_playwright
-
 from undetected_playwright import stealth_sync
-
-
 
 
 def bytedance():
@@ -15,91 +14,135 @@ def bytedance():
         page.goto('https://uz-appointment.visametric.com/uz')
         page.wait_for_timeout(5000)
         page.click("a[id=confirmationbtn]")
-        page.wait_for_timeout(5000)
-        page.locator(".country").select_option("National Visa")
-        page.wait_for_timeout(5000)
+        page.wait_for_timeout(5000)        
         
         #first page
-        country = page.locator(".country")
-        country.wait_for()
-        country.select_option("National Visa")
+        country = page.select_option('select#country', label='National Visa')
+        visitingcountry = page.select_option("select#visitingcountry",label='Germany')
+        city = page.select_option("select#city",label='Andijan')
+        office = page.select_option("select#office",label='Tashkent')
+        officetype = page.select_option("select#officetype",label='NORMAL')
+        totalPerson = page.select_option("select#totalPerson",label='1 arizachi')
         
-        visitingcountry = page.locator(".visitingcountry")
-        visitingcountry.wait_for()
-        visitingcountry.select_option("Germany")
-
-        city = page.locator("#city")
-        city.wait_for()
-        city.select_option("Andijan")
-
-        office = page.locator("#office")
-        office.wait_for()
-        office.select_option("Tashkent")
-        
-        
-        officetype = page.locator(".officetype")
-        officetype.wait_for()
-        officetype.select_option("NORMAL")
-        
-        totalPerson = page.locator(".totalPerson")
-        totalPerson.wait_for()
-        totalPerson.select_option("1 arizachi")
+        while page.get_by_label("Sana mavjud emas"):
+            break
         
         #second page btnAppCountNext
+        
         page.wait_for_timeout(5000)
         page.click("a[id=btnAppCountNext]")
-        
-        name1 = page.locator("#name1")
-        name1.wait_for()
-        name1.fill('Roman')
-        
-        surname1 = page.locator("#surname1")
-        surname1.wait_for()
-        surname1.fill('Mammadov')
-        
-        localname1 = page.locator("#localname1")
-        localname1.wait_for()
-        localname1.fill('Roman Mammadov')
-        
-        nationality1 = page.locator("#nationality1")
-        nationality1.wait_for()
-        nationality1.select_option("Uzbekistan")
-        
-        birthday1 = page.locator("#birthday1")
-        birthday1.wait_for()
-        birthday1.select_option("01")
-        
-        birthmonth1 = page.locator("#birthmonth1")
-        birthmonth1.wait_for()
-        birthmonth1.select_option("01")
-        
-        birthyear1 = page.locator("#birthyear1")
-        birthyear1.wait_for()
-        birthyear1.select_option("1950")
-        
-        passport1 = page.locator("#passport1")
-        passport1.wait_for()
-        passport1.fill('35324352')
-        
-        date = "June 2025"
-        
-        def datepicker(date):
-            list_date = date.split("-")
+        def second_page():
             
-            passportExpirationDate1 = page.locator("#passportExpirationDate1")
-            passportExpirationDate1.wait_for()
-            passportExpirationDate1.click()
-            
-            mmY = page.locator("(//table[@class='table-condensed']//th[@class='datepicker-switch'])[1]")
-            mmY.wait_for()
-            nextbutton = page.locator("(//table[@class='table-condensed']//th[@class='next'])[1]")
-            nextbutton.wait_for()
-            while (mmY.text_content() != date):
-                nextbutton.click(force=True)
+            if "1" in totalPerson:
+                name1 = page.fill("input#name1",'Roman')
+                surname1 = page.fill("#surname1",'Mammadov')
+                localname1 = page.fill("#localname1",'Roman Mammadov')
+                nationality1 = page.select_option("select#nationality1",label='Foreign')
+                birthday1 = page.select_option("select#birthday1",label='01')
+                birthmonth1 = page.select_option("select#birthmonth1",label='01')  
+                birthyear1 = page.select_option("select#birthyear1",label='1960')
+                passport1 = page.fill("#passport1",'35324352')
                 
-        datepicker("June 2023")    
-            
-        page.wait_for_timeout(30000)
+                def datepicker(date):
+                    list_date = date.split(" ")
+                    month_and_year = list_date[0] + " " + list_date[1]
+                    
+                    passportExpirationDate1 = page.locator("#passportExpirationDate1")
+                    passportExpirationDate1.wait_for()
+                    passportExpirationDate1.click()
+                    
+                    page.wait_for_timeout(5000)
+                    mmY = page.locator(".datepicker-switch").nth(0)
+                    mmY.wait_for()
+                    nextbutton = page.locator(".next").nth(0)
+                    nextbutton.wait_for()
+                    while (mmY.text_content() != month_and_year):
+                        nextbutton.click(force=True)
+                        
+                    day = page.click(f"//td[@class='day'][text()='{list_date[2]}']")  
+                    
+                datepicker("June 2025 25")  
+                
+                email1 = page.fill("input#email1",'romanmammadov872@gmail.com')  
+                phone1 = page.fill("input#phone1",'0709707067')  
+                alternativephone1 = page.fill("input#alternativephone1",'0709707067')  
+                
+        second_page()      
+        
+        page.click("a[id=btnAppPersonalNext]")
+        page.wait_for_timeout(5000)
+        page.click("a[id=btnAppPreviewNext]")
+        
+        page.get_by_label("Men umumiy foydalanish shartlarini qabul qilaman va maqullayman.").check()
+        page.wait_for_timeout(5000)
+        page.click("button[type=button]")
+        
+        #Safar boshlanadigan sana.
+        
+        def tripStart(date):
+            list_date = date.split(" ")
+            month_and_year = list_date[0] + " " + list_date[1]
+                    
+            tripStart = page.locator("input[name='travelStartDate']")
+            tripStart.wait_for()
+            tripStart.click()
+                    
+            page.wait_for_timeout(5000)
+            mmY = page.locator(".datepicker-switch").nth(0)
+            mmY.wait_for()
+            nextbutton = page.locator(".next").nth(0)
+            nextbutton.wait_for()
+            while (mmY.text_content() != month_and_year):
+                nextbutton.click(force=True)
+                        
+            day = page.click(f"//td[@class='day'][text()='{list_date[2]}']")  
+                    
+        tripStart("June 2023 25") 
+        
+        def tripEndFunc(date):
+            list_date = date.split(" ")
+            month_and_year = list_date[0] + " " + list_date[1]
+                    
+            tripEnd = page.locator("input[name='travelEndDate']")
+            tripEnd.wait_for()
+            tripEnd.click()
+                    
+            page.wait_for_timeout(5000)
+            mmY = page.locator(".datepicker-switch").nth(0)
+            mmY.wait_for()
+            nextbutton = page.locator(".next").nth(0)
+            nextbutton.wait_for()
+            while (mmY.text_content() != month_and_year):
+                nextbutton.click(force=True)
+                        
+            day = page.click(f"//td[@class='day'][text()='{list_date[2]}']")  
+                    
+        tripEndFunc("June 2023 29") 
+        
+        def timeForMeeting(date):
+            list_date = date.split(" ")
+            month_and_year = list_date[0] + " " + list_date[1]
+                            
+            meeting = page.locator(".form-control.calendarinput")
+            meeting.wait_for()
+            meeting.click()
+                    
+            page.wait_for_timeout(5000)
+            mmY = page.locator(".datepicker-switch").nth(0)
+            mmY.wait_for()
+            nextbutton = page.locator(".next").nth(0)
+            nextbutton.wait_for()
+            day = page.locator("//td[@class='day'][text()='{list_date[2]}']") 
+            while True:
+                if not day.is_visible():
+                    bytedance()
+
+            if day.is_visible():
+                day.click()
+                    
+        timeForMeeting("June 2023 27") 
+        
+        page.wait_for_timeout(300000)
 
 
 if __name__ == "__main__":
