@@ -3,3 +3,4 @@ local_config.py
 **/logs
 __pycache__/
 .idea
+data/data.db
