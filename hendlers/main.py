@@ -1,4 +1,4 @@
-from config import dp
+from config import dp, db
 from aiogram import types
 from aiogram.types import ReplyKeyboardMarkup
 from context.context import Users
@@ -86,6 +86,7 @@ async def cmd6(message: types.Message, state: FSMContext):
 async def cmd7(message: types.Message, state: FSMContext):
     async with state.proxy() as data:
         data['ariza'] = message.text
-        await message.answer('Отправлено! \n'
-                             'Ожидайте')
-        await state.finish()
+        await Users.next()
+        await message.answer('Имя')
+
+
