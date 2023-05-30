@@ -11,7 +11,8 @@ class Database(object):
 
     def create_tables(self):
         self.query(
-            'CREATE TABLE IF NOT EXISTS users (id int, visa text, ariza_shakli text, davlat text,'
+            'CREATE TABLE IF NOT EXISTS users (id INTEGER PRIMARY KEY AUTOINCREMENT, visa text, ariza_shakli text, '
+            'davlat text,'
             'shahar text, visametric text, turlari text, soni int, name text, firstname text,'
             'mileti text, birthday int, month int, year int, number_passport text,'
             'year_passport text, phone_number text, alt_phone text, email text,'

@@ -1,6 +1,6 @@
 from config import dp, db
 from aiogram import types
-from aiogram.types import ReplyKeyboardMarkup
+from aiogram.types import ReplyKeyboardMarkup, ReplyKeyboardRemove
 from context.context import Users
 from aiogram.dispatcher import FSMContext
 
@@ -84,9 +84,141 @@ async def cmd6(message: types.Message, state: FSMContext):
 
 @dp.message_handler(state=Users.ariza)
 async def cmd7(message: types.Message, state: FSMContext):
+    markup = ReplyKeyboardRemove()
     async with state.proxy() as data:
         data['ariza'] = message.text
         await Users.next()
-        await message.answer('Имя')
+        await message.answer('Имя', reply_markup=markup)
 
 
+@dp.message_handler(state=Users.name)
+async def cmd8(message: types.Message, state: FSMContext):
+    async with state.proxy() as data:
+        data['name'] = message.text
+        await Users.next()
+        await message.answer('Фамилия')
+
+
+@dp.message_handler(state=Users.firstname)
+async def cmd9(message: types.Message, state: FSMContext):
+    async with state.proxy() as data:
+        data['firstname'] = message.text
+        await Users.next()
+        await message.answer('Полное имя')
+
+
+@dp.message_handler(state=Users.full_name)
+async def cmd10(message: types.Message, state: FSMContext):
+    async with state.proxy() as data:
+        data['full_name'] = message.text
+        await Users.next()
+        await message.answer('Национальность')
+
+
+@dp.message_handler(state=Users.mileti)
+async def cmd11(message: types.Message, state: FSMContext):
+    async with state.proxy() as data:
+        data['mileti'] = message.text
+        await Users.next()
+        await message.answer('Дата рождения (в цифрах)')
+
+
+@dp.message_handler(state=Users.birthday)
+async def cmd12(message: types.Message, state: FSMContext):
+    async with state.proxy() as data:
+        data['birthday'] = message.text
+        await Users.next()
+        await message.answer('Месяц рождения (в цифрах)')
+
+
+@dp.message_handler(state=Users.month)
+async def cmd13(message: types.Message, state: FSMContext):
+    async with state.proxy() as data:
+        data['month'] = message.text
+        await Users.next()
+        await message.answer('Год рождения (в цифрах)')
+
+
+@dp.message_handler(state=Users.year)
+async def cmd14(message: types.Message, state: FSMContext):
+    async with state.proxy() as data:
+        data['year'] = message.text
+        await Users.next()
+        await message.answer('Номер пасспорта')
+
+
+@dp.message_handler(state=Users.number_passport)
+async def cmd15(message: types.Message, state: FSMContext):
+    async with state.proxy() as data:
+        data['number_passport'] = message.text
+        await Users.next()
+        await message.answer('Срок пасспорта (день.месяц.год) в цифрах через точку')
+
+
+@dp.message_handler(state=Users.year_passport)
+async def cmd16(message: types.Message, state: FSMContext):
+    async with state.proxy() as data:
+        data['year_passport'] = message.text
+        await Users.next()
+        await message.answer('Телефон номер')
+
+
+@dp.message_handler(state=Users.phone_number)
+async def cmd17(message: types.Message, state: FSMContext):
+    async with state.proxy() as data:
+        data['phone_number'] = message.text
+        await Users.next()
+        await message.answer('Альтернативный номер телефона')
+
+
+@dp.message_handler(state=Users.alt_phone)
+async def cmd18(message: types.Message, state: FSMContext):
+    async with state.proxy() as data:
+        data['alt_phone'] = message.text
+        await Users.next()
+        await message.answer('Почта')
+
+
+@dp.message_handler(state=Users.email)
+async def cmd19(message: types.Message, state: FSMContext):
+    async with state.proxy() as data:
+        data['email'] = message.text
+        await Users.next()
+        await message.answer('Пароль')
+
+
+@dp.message_handler(state=Users.password)
+async def cmd20(message: types.Message, state: FSMContext):
+    markup = ReplyKeyboardMarkup(resize_keyboard=True)
+    markup.add('Верно')
+    async with state.proxy() as data:
+        data['password'] = message.text
+        await Users.next()
+        await message.answer(f"1. {data['ariza_shakli']}\n"
+                             f"2. {data['tashrif_davlet']}\n"
+                             f"3. {data['istiqomat']}\n"
+                             f"4. {data['visametric']}\n"
+                             f"5. {data['xizmat']}\n"
+                             f"6. {data['ariza']}\n"
+                             f"7. {data['name']}\n"
+                             f"8. {data['firstname']}\n"
+                             f"9. {data['full_name']}\n"
+                             f"10. {data['mileti']}\n"
+                             f"11. {data['birthday']}.{data['month']}.{data['year']}\n"
+                             f"12. {data['number_passport']}\n"
+                             f"13. {data['year_passport']}\n"
+                             f"14. {data['phone_number']}\n"
+                             f"15. {data['alt_phone']}\n"
+                             f"16. {data['email']}\n"
+                             f"17. {data['password']}", reply_markup=markup)
+
+
+@dp.message_handler(text='Верно')
+async def done(message: types.Message, state: FSMContext):
+    async with state.proxy() as data:
+        db.query("INSERT INTO users VALUES (None, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                 (data['ariza_shakli'], data['tashrif_davlet'], data['istiqomat'], data['visametric'], data['xizmat'],
+                  data['ariza'], data['name'], data['firstname'], data['full_name'],
+                  data['mileti'], data['birthday'], data['month'], data['year'], data['number_passport'], data['year_passport'],
+                  data['phone_number'], data['alt_phone'], data['email'], data['password'],))
+        await message.answer('Принято')
