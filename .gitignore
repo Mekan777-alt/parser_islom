@@ -4,3 +4,4 @@ local_config.py
 __pycache__/
 .idea
 data/data.db
+db.db

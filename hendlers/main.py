@@ -1,4 +1,5 @@
-from config import dp, db
+from config import dp, db_link
+import sqlite3
 from aiogram import types
 from aiogram.types import ReplyKeyboardMarkup, ReplyKeyboardRemove
 from context.context import Users
@@ -216,9 +217,18 @@ async def cmd20(message: types.Message, state: FSMContext):
 @dp.message_handler(text='Верно')
 async def done(message: types.Message, state: FSMContext):
     async with state.proxy() as data:
-        db.query("INSERT INTO users VALUES (None, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
-                 (data['ariza_shakli'], data['tashrif_davlet'], data['istiqomat'], data['visametric'], data['xizmat'],
-                  data['ariza'], data['name'], data['firstname'], data['full_name'],
-                  data['mileti'], data['birthday'], data['month'], data['year'], data['number_passport'], data['year_passport'],
-                  data['phone_number'], data['alt_phone'], data['email'], data['password'],))
+        conn = sqlite3.connect(db_link)
+        cursor = conn.cursor()
+        cursor.execute("INSERT INTO users(visa, ariza_shakli, davlat, shahar, visametric, "
+                       "turlari, soni, name, firstname, mileti, birthday, month, year, number_passport, "
+                       "year_passport, phone_number, alt_phone, email, password) "
+                       "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                       (data['ariza_shakli'], data['tashrif_davlet'], data['istiqomat'], data['visametric'],
+                        data['xizmat'],
+                        data['ariza'], data['name'], data['firstname'], data['full_name'],
+                        data['mileti'], data['birthday'], data['month'], data['year'], data['number_passport'],
+                        data['year_passport'],
+                        data['phone_number'], data['alt_phone'], data['email'], data['password'],))
+        conn.commit()
+        conn.close()
         await message.answer('Принято')
