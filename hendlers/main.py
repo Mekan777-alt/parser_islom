@@ -6,7 +6,7 @@ from context.context import Users
 from aiogram.dispatcher import FSMContext
 
 
-@dp.message_handler(commands='start')
+@dp.message_handler(commands=['start', 'Добавить нового'])
 async def start_cmd(message: types.Message):
     markup = ReplyKeyboardMarkup(resize_keyboard=True)
     markup.add('Schengen Visa')
@@ -216,11 +216,13 @@ async def cmd20(message: types.Message, state: FSMContext):
 
 @dp.message_handler(text='Верно')
 async def done(message: types.Message, state: FSMContext):
+    markup = ReplyKeyboardMarkup(resize_keyboard=True)
+    markup.add('Добавить нового')
     async with state.proxy() as data:
         conn = sqlite3.connect(db_link)
         cursor = conn.cursor()
-        cursor.execute("INSERT INTO users(visa, ariza_shakli, davlat, shahar, visametric, "
-                       "turlari, soni, name, firstname, mileti, birthday, month, year, number_passport, "
+        cursor.execute("INSERT INTO users(ariza_shakli, davlat, shahar, visametric, "
+                       "turlari, soni, name, firstname, full_name, mileti, birthday, month, year, number_passport, "
                        "year_passport, phone_number, alt_phone, email, password) "
                        "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
                        (data['ariza_shakli'], data['tashrif_davlet'], data['istiqomat'], data['visametric'],
@@ -231,4 +233,5 @@ async def done(message: types.Message, state: FSMContext):
                         data['phone_number'], data['alt_phone'], data['email'], data['password'],))
         conn.commit()
         conn.close()
-        await message.answer('Принято')
+        await state.finish()
+        await message.answer('Принято', reply_markup=markup)

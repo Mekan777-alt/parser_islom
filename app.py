@@ -22,6 +22,7 @@ def create_table():
             soni INT, 
             name TEXT, 
             firstname TEXT,
+            full_name TEXT,
             mileti TEXT, 
             birthday INT, 
             month INT, 
